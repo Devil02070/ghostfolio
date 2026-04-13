@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useAccount, useDisconnect } from "wagmi";
 import { useWalletBalance } from "@/lib/hooks";
 import { useState } from "react";
 import Logo from "../Logo";
@@ -17,14 +18,17 @@ const tabs = [
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout, email } = useAuth();
+  const { logout, email, loggedIn } = useAuth();
+  const { address: wagmiAddr, isConnected: wagmiConnected } = useAccount();
+  const { disconnect: wagmiDisconnect } = useDisconnect();
   const [hovered, setHovered] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const { data: balData, isLoading: balLoading } = useWalletBalance();
 
-  const evmAddr = balData?.evmAddress || null;
-  const addrLoading = balLoading;
+  // Use wagmi address if connected via MetaMask/OKX Wallet, otherwise agentic wallet address
+  const evmAddr = wagmiConnected ? wagmiAddr : (balData?.evmAddress || null);
+  const addrLoading = !wagmiConnected && balLoading;
   const short = evmAddr ? `${evmAddr.slice(0, 6)}...${evmAddr.slice(-4)}` : null;
 
   return (
@@ -96,7 +100,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </div>
 
           {/* Disconnect */}
-          <button onClick={async () => { await logout(); router.push("/"); }}
+          <button onClick={async () => { if (wagmiConnected) wagmiDisconnect(); if (loggedIn) await logout(); router.push("/"); }}
             className="w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 mt-4"
             style={{ color: "rgba(255,255,255,0.6)" }}
             title="Disconnect">

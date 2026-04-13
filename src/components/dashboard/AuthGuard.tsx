@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { useAccount } from "wagmi";
 import Logo from "../Logo";
 
 type Step = "email" | "otp" | "success";
@@ -139,6 +140,9 @@ function LoginModal() {
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { loggedIn, loading } = useAuth();
+  const { isConnected: walletConnected } = useAccount();
+
+  const authenticated = loggedIn || walletConnected;
 
   if (loading) {
     return (
@@ -148,7 +152,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!loggedIn) return <LoginModal />;
+  if (!authenticated) return <LoginModal />;
 
   return <>{children}</>;
 }
