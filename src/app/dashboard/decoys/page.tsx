@@ -18,7 +18,7 @@ export default function DecoyControlPage() {
   const on = s?.enabled ?? false, bud = s?.dailyBudget ?? 5, mx = s?.maxSwapSize ?? 20, fr = s?.frequency ?? "moderate";
 
   async function sim() { setToast(null); const r = await act.mutateAsync({ mode: "simulate" }); setToast({ ok: r.ok, msg: r.ok ? `Simulated: ${r.data.swap.fromToken} → ${r.data.swap.toToken}` : r.error || "Failed" }); }
-  async function exe() { setToast(null); const r = await act.mutateAsync({ mode: "execute" }); setToast({ ok: r.ok, msg: r.ok ? `TX: ${r.data.txHash?.slice(0, 18) || "pending"}...` : r.error || "Failed" }); }
+  async function exe() { setToast(null); const r = await act.mutateAsync({ mode: "execute" }); setToast({ ok: r.ok, msg: r.ok ? `Live TX: ${r.data.txHash?.slice(0, 18) || "pending"}... on X Layer` : r.error || "Failed" }); }
 
   if (sL) return <div className="flex items-center justify-center py-16"><div className="w-5 h-5 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(54,144,210,0.08)", borderTopColor: "rgba(255,255,255,0.4)" }} /></div>;
 
@@ -131,7 +131,9 @@ export default function DecoyControlPage() {
               <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>&rarr; {x.toToken}</td>
               <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>{x.amount}</td>
               <td className="py-2 px-3 text-[9px] font-semibold capitalize" style={{ color: "rgba(255,255,255,0.65)" }}>{x.status}</td>
-              <td className="py-2 px-3 text-[9px] font-mono" style={{ color: x.txHash ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.5)" }}>{x.txHash ? `${x.txHash.slice(0, 10)}...` : "—"}</td>
+              <td className="py-2 px-3 text-[9px] font-mono" style={{ color: x.txHash ? "#3690d2" : "rgba(255,255,255,0.5)" }}>
+                {x.txHash ? <a href={`https://www.okx.com/explorer/xlayer/tx/${x.txHash}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{x.txHash.slice(0, 10)}...</a> : "—"}
+              </td>
             </tr>
           ))}</tbody></table></div>}
       </div></div>
