@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { useAccount, useBalance } from "wagmi";
-import { xlayerTestnet } from "@/lib/wagmi-config";
+import { useAccount } from "wagmi";
 import { useWalletBalance, useFootprint, parseBalanceToPortfolio } from "@/lib/hooks";
 import CountUp from "@/components/reactbits/CountUp";
 
@@ -30,13 +29,28 @@ export default function DashboardHome() {
   const { data: bal, isLoading: bL } = useWalletBalance();
   const { data: fp, isLoading: fL } = useFootprint();
 
-  // wagmi wallet balance (OKX Wallet / MetaMask on X Layer testnet)
+  // wagmi wallet
   const { address: wagmiAddr, isConnected: wagmiConnected } = useAccount();
-  const { data: wagmiBal } = useBalance({
-    address: wagmiAddr,
-    chainId: xlayerTestnet.id,
-    query: { enabled: wagmiConnected, refetchInterval: 15000 },
-  });
+  const [wagmiOkbBalance, setWagmiOkbBalance] = useState(0);
+
+  // Fetch balance directly from X Layer testnet RPC (reliable, no chain mismatch issues)
+  useEffect(() => {
+    if (!wagmiConnected || !wagmiAddr) { setWagmiOkbBalance(0); return; }
+    async function fetchBal() {
+      try {
+        const res = await fetch("https://testrpc.xlayer.tech/evm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", method: "eth_getBalance", params: [wagmiAddr, "latest"], id: 1 }),
+        });
+        const json = await res.json();
+        if (json.result) setWagmiOkbBalance(Number(BigInt(json.result)) / 1e18);
+      } catch { /* ignore */ }
+    }
+    fetchBal();
+    const interval = setInterval(fetchBal, 15000);
+    return () => clearInterval(interval);
+  }, [wagmiConnected, wagmiAddr]);
 
   useEffect(() => { if (bL && !wagmiConnected) return; const ctx = gsap.context(() => { gsap.fromTo(".da", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power3.out" }); }, ref); return () => ctx.revert(); }, [bL, wagmiConnected]);
 
@@ -44,9 +58,7 @@ export default function DashboardHome() {
   const portfolio = parseBalanceToPortfolio(bal);
   const agenticTotal = bal?.totalValueUsd ? parseFloat(bal.totalValueUsd) : portfolio.reduce((s, t) => s + t.value, 0);
 
-  // wagmi wallet: show native OKB balance
-  const wagmiOkbBalance = wagmiBal ? parseFloat(wagmiBal.formatted) : 0;
-  const okbPrice = 82; // approximate
+  const okbPrice = 82;
   const wagmiTotal = wagmiOkbBalance * okbPrice;
 
   // Use wagmi balance if connected via browser wallet, otherwise agentic
