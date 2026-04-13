@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useAccount, useBalance } from "wagmi";
+import { xlayerTestnet } from "@/lib/wagmi-config";
 import { useWalletBalance, useFootprint, parseBalanceToPortfolio } from "@/lib/hooks";
 import CountUp from "@/components/reactbits/CountUp";
 
@@ -31,7 +32,11 @@ export default function DashboardHome() {
 
   // wagmi wallet balance (OKX Wallet / MetaMask on X Layer testnet)
   const { address: wagmiAddr, isConnected: wagmiConnected } = useAccount();
-  const { data: wagmiBal } = useBalance({ address: wagmiAddr, query: { enabled: wagmiConnected } });
+  const { data: wagmiBal } = useBalance({
+    address: wagmiAddr,
+    chainId: xlayerTestnet.id,
+    query: { enabled: wagmiConnected, refetchInterval: 15000 },
+  });
 
   useEffect(() => { if (bL && !wagmiConnected) return; const ctx = gsap.context(() => { gsap.fromTo(".da", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power3.out" }); }, ref); return () => ctx.revert(); }, [bL, wagmiConnected]);
 
