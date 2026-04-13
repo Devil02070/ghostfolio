@@ -67,30 +67,36 @@ function LoginModalUI({ onClose }: { onClose: () => void }) {
     }
   }
 
-  function handleMetaMask() {
-    const metamask = connectors.find((c) => c.name === "MetaMask") || connectors[0];
-    if (!metamask) return;
-    connect({ connector: metamask }, {
-      onSuccess: () => {
-        setStep("success");
-        setTimeout(() => { onClose(); router.push("/dashboard"); }, 1200);
-      },
-      onError: (err) => {
-        setError(err.message || "Failed to connect MetaMask");
-      },
-    });
-  }
+  async function handleWalletConnect(connectorName: string) {
+    // If already connected, go straight to dashboard
+    if (isConnected) {
+      setStep("success");
+      setTimeout(() => { onClose(); router.push("/dashboard"); }, 800);
+      return;
+    }
 
-  function handleInjected() {
-    const injected = connectors.find((c) => c.name === "Injected" || c.name === "Browser Wallet") || connectors[0];
-    if (!injected) return;
-    connect({ connector: injected }, {
+    const connector = connectors.find((c) => c.name === connectorName)
+      || connectors.find((c) => c.name === "Injected")
+      || connectors[0];
+    if (!connector) return;
+
+    // Disconnect first if stale connection exists
+    try { disconnect(); } catch { /* ignore */ }
+
+    connect({ connector }, {
       onSuccess: () => {
         setStep("success");
         setTimeout(() => { onClose(); router.push("/dashboard"); }, 1200);
       },
       onError: (err) => {
-        setError(err.message || "Failed to connect wallet");
+        const msg = err.message || "Failed to connect";
+        if (msg.includes("already connected")) {
+          // Already connected — just go to dashboard
+          setStep("success");
+          setTimeout(() => { onClose(); router.push("/dashboard"); }, 800);
+        } else {
+          setError(msg);
+        }
       },
     });
   }
@@ -132,7 +138,7 @@ function LoginModalUI({ onClose }: { onClose: () => void }) {
 
               <div className="space-y-3">
                 {/* MetaMask */}
-                <button onClick={handleMetaMask} disabled={connectPending}
+                <button onClick={() => handleWalletConnect("MetaMask")} disabled={connectPending}
                   className="w-full flex items-center gap-4 p-4 rounded-xl transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
                   style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -155,7 +161,7 @@ function LoginModalUI({ onClose }: { onClose: () => void }) {
                 </button>
 
                 {/* OKX Wallet / Injected */}
-                <button onClick={handleInjected} disabled={connectPending}
+                <button onClick={() => handleWalletConnect("OKX Wallet")} disabled={connectPending}
                   className="w-full flex items-center gap-4 p-4 rounded-xl transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
                   style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
