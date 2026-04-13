@@ -148,7 +148,7 @@ export default function DecoyControlPage() {
                 backdropFilter: "blur(8px)",
               }}>
               {busy && <div className="w-3 h-3 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(54,144,210,0.12)", borderTopColor: "#3690d2" }} />}
-              {metamaskConnected ? "Execute via MetaMask" : "Execute Swap"}
+              {metamaskConnected ? "Execute via Wallet" : "Execute Swap"}
             </button>
           </div>
         </div></div>

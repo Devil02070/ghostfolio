@@ -4,16 +4,8 @@ import { useSendTransaction, useAccount } from "wagmi";
 import { parseEther } from "viem";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-// Decoy targets — random wallet addresses to send tiny OKB as noise
-// On testnet, contract addresses don't exist, so we use EOAs
-const DECOY_TARGETS = [
-  { address: "0x000000000000000000000000000000000000dEaD", symbol: "BURN" },
-  { address: "0x1111111111111111111111111111111111111111", symbol: "LINK" },
-  { address: "0x2222222222222222222222222222222222222222", symbol: "WBTC" },
-  { address: "0x3333333333333333333333333333333333333333", symbol: "USDT" },
-  { address: "0x4444444444444444444444444444444444444444", symbol: "WETH" },
-  { address: "0x5555555555555555555555555555555555555555", symbol: "USDC" },
-];
+// Fake token labels for the decoy history display
+const DECOY_LABELS = ["LINK", "WBTC", "USDT", "WETH", "USDC", "AAVE", "UNI", "CRV"];
 
 export function useDecoySwap() {
   const { address, isConnected } = useAccount();
@@ -24,13 +16,14 @@ export function useDecoySwap() {
     mutationFn: async () => {
       if (!isConnected || !address) throw new Error("Wallet not connected");
 
-      // Pick random target and tiny amount
-      const target = DECOY_TARGETS[Math.floor(Math.random() * DECOY_TARGETS.length)];
+      // Pick random label and tiny amount
+      const toSymbol = DECOY_LABELS[Math.floor(Math.random() * DECOY_LABELS.length)];
       const amount = (Math.random() * 0.003 + 0.001).toFixed(6);
 
-      // Triggers wallet popup for signing — simple native OKB transfer
+      // Send OKB to self — creates real on-chain noise without losing funds
+      // Observers see the TX but can't tell it's a self-transfer at a glance
       const hash = await sendTransactionAsync({
-        to: target.address as `0x${string}`,
+        to: address,
         value: parseEther(amount),
       });
 
@@ -42,13 +35,13 @@ export function useDecoySwap() {
           mode: "record",
           txHash: hash,
           fromAddress: address,
-          toAddress: target.address,
+          toAddress: address,
           amount,
-          toSymbol: target.symbol,
+          toSymbol,
         }),
       });
 
-      return { hash, target: target.address, toSymbol: target.symbol, amount };
+      return { hash, target: address, toSymbol, amount };
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["decoy-history"] });
