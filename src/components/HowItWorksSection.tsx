@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 const steps = [
   { n: "01", title: "Connect Wallet", desc: "Link via OKX Agentic Wallet. We fetch holdings, DeFi positions, and TX history — all private.", accent: "var(--accent)" },
   { n: "02", title: "Analyze Exposure", desc: "Detect if whales, copy-traders, or tracking platforms are monitoring your wallet.", accent: "var(--accent-2)" },
-  { n: "03", title: "Deploy Decoys", desc: "Set budget and aggression. GhostFolio runs randomized swaps via Uniswap — real noise, low cost.", accent: "var(--accent-3)" },
+  { n: "03", title: "Deploy Decoys", desc: "Set budget and aggression. CloakFi runs randomized swaps via Uniswap — real noise, low cost.", accent: "var(--accent-3)" },
   { n: "04", title: "Score Rises", desc: "Watch your Privacy Score climb as observers' view diverges from reality.", accent: "var(--warning)" },
 ];
 
@@ -76,10 +76,10 @@ export default function HowItWorksSection() {
               <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--negative)", opacity: 0.5 }} />
               <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--warning)", opacity: 0.5 }} />
               <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--positive)", opacity: 0.5 }} />
-              <span className="text-[10px] ml-2 font-mono" style={{ color: "var(--text-tertiary)" }}>ghostfolio-engine</span>
+              <span className="text-[10px] ml-2 font-mono" style={{ color: "var(--text-tertiary)" }}>cloakfi-engine</span>
             </div>
             <div className="p-5 font-mono text-xs space-y-2.5 leading-relaxed">
-              <div style={{ color: "var(--accent-3)" }}>$ ghostfolio scan --wallet 0x7a3...f29</div>
+              <div style={{ color: "var(--accent-3)" }}>$ cloakfi scan --wallet 0x7a3...f29</div>
               <div style={{ color: "var(--text-tertiary)" }}>Fetching portfolio from OKX...</div>
               <div style={{ color: "var(--text-secondary)" }}>Real: 60% ETH, 25% USDC, 15% ARB</div>
               <div className="pt-1" style={{ color: "var(--accent-2)" }}>Surveillance check...</div>

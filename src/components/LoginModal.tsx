@@ -1,13 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import Logo from "../Logo";
+import Logo from "./Logo";
 
+/* ── Context ── */
+const LoginModalCtx = createContext<{ open: () => void }>({ open: () => {} });
+export const useLoginModal = () => useContext(LoginModalCtx);
+
+/* ── Provider ── */
+export function LoginModalProvider({ children }: { children: React.ReactNode }) {
+  const [show, setShow] = useState(false);
+  const open = useCallback(() => setShow(true), []);
+  const close = useCallback(() => setShow(false), []);
+
+  return (
+    <LoginModalCtx.Provider value={{ open }}>
+      {children}
+      {show && <LoginModalUI onClose={close} />}
+    </LoginModalCtx.Provider>
+  );
+}
+
+/* ── Modal UI ── */
 type Step = "email" | "otp" | "success";
 
-function LoginModal() {
+function LoginModalUI({ onClose }: { onClose: () => void }) {
   const { login, verify } = useAuth();
+  const router = useRouter();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -30,16 +51,21 @@ function LoginModal() {
     setError(""); setSubmitting(true);
     const r = await verify(otp.trim());
     setSubmitting(false);
-    if (r.ok) setStep("success");
-    else setError(r.error || "Invalid code");
+    if (r.ok) {
+      setStep("success");
+      setTimeout(() => router.push("/dashboard"), 1200);
+    } else {
+      setError(r.error || "Invalid code");
+    }
   }
 
   const Spinner = () => <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }} />
+      <div className="absolute inset-0 cursor-pointer" onClick={step === "success" ? undefined : onClose}
+        style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }} />
 
       {/* Modal */}
       <div className="relative z-10 w-full max-w-[400px] mx-4">
@@ -124,7 +150,7 @@ function LoginModal() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-1">Connected</h3>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>Loading dashboard...</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>Redirecting to dashboard...</p>
             </div>
           )}
         </div>
@@ -135,20 +161,4 @@ function LoginModal() {
       </div>
     </div>
   );
-}
-
-export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { loggedIn, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center" style={{ background: "#0a0e1a" }}>
-        <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(255,255,255,0.08)", borderTopColor: "#3690d2" }} />
-      </div>
-    );
-  }
-
-  if (!loggedIn) return <LoginModal />;
-
-  return <>{children}</>;
 }

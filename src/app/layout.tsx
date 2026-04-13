@@ -1,31 +1,30 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Outfit, IBM_Plex_Mono } from "next/font/google";
+import { Sora, Inter, JetBrains_Mono } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import { AuthProvider } from "@/lib/auth-context";
 import { QueryProvider } from "@/lib/query-provider";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const sora = Sora({
   variable: "--font-heading",
   subsets: ["latin"],
   display: "swap",
 });
 
-const outfit = Outfit({
+const inter = Inter({
   variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
 });
 
-const ibmMono = IBM_Plex_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "GhostFolio — On-Chain Privacy Shield",
+  title: "CloakFi — On-Chain Privacy Shield",
   description:
     "Hide your real crypto strategy. Confuse on-chain observers with intelligent decoy swaps.",
 };
@@ -39,7 +38,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="dark"
-      className={`${spaceGrotesk.variable} ${outfit.variable} ${ibmMono.variable} h-full antialiased`}
+      className={`${sora.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col" style={{ background: "var(--bg)", color: "var(--text)" }}>

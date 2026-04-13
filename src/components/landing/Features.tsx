@@ -41,7 +41,7 @@ export default function Features() {
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1] text-white">
               Three layers of <span style={{ color: "#3690d2" }}>on-chain privacy</span>
             </h2>
-            <p className="mt-5 text-lg leading-relaxed max-w-lg" style={{ color: "rgba(255,255,255,0.4)" }}>
+            <p className="mt-5 text-lg leading-relaxed max-w-lg" style={{ color: "rgba(255,255,255,0.6)" }}>
               Each engine works independently but compounds together.
             </p>
           </div>
@@ -51,20 +51,20 @@ export default function Features() {
           {features.map((f, i) => (
             <AnimatedContent key={i} distance={60} delay={i * 0.15} className={i === 1 ? "lg:mt-10" : i === 2 ? "lg:mt-20" : ""}>
               <SpotlightCard spotlightColor="rgba(54,144,210,0.08)" className="rounded-2xl p-8 h-full"
-                style={{ background: "rgba(20,29,44,0.3)", backdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 8px 32px rgba(0,0,0,0.15)" } as React.CSSProperties}>
+                style={{ background: "rgba(20,29,44,0.2)", backdropFilter: "blur(28px)", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.1)" } as React.CSSProperties}>
                 <div className="relative z-10">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6"
                     style={{ background: "rgba(54,144,210,0.1)", border: "1px solid rgba(54,144,210,0.15)" }}>
                     <svg className="w-6 h-6" fill="none" stroke="#3690d2" strokeWidth={1.5} viewBox="0 0 24 24">{f.icon}</svg>
                   </div>
-                  <div className="text-[10px] uppercase tracking-[0.15em] mb-3" style={{ color: "rgba(255,255,255,0.3)" }}>{f.tag}</div>
+                  <div className="text-[10px] uppercase tracking-[0.15em] mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>{f.tag}</div>
                   <h3 className="text-xl font-semibold text-white mb-3 leading-tight">{f.title}</h3>
-                  <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.4)" }}>{f.desc}</p>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.6)" }}>{f.desc}</p>
                   <div className="pt-5 flex items-baseline gap-2" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                     <span className="text-2xl font-bold" style={{ color: "#3690d2" }}>
                       <CountUp to={f.stat.value} duration={2} delay={0.5 + i * 0.2} suffix={f.stat.suffix} />
                     </span>
-                    <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.3)" }}>{f.stat.label}</span>
+                    <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>{f.stat.label}</span>
                   </div>
                 </div>
               </SpotlightCard>
@@ -76,12 +76,12 @@ export default function Features() {
           {small.map((f, i) => (
             <AnimatedContent key={i} distance={30} delay={0.6 + i * 0.1}>
               <div className="flex items-start gap-4 p-5 rounded-xl transition-all duration-300 hover:bg-white/[0.03]"
-                style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
+                style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[10px] font-mono flex-shrink-0"
                   style={{ background: "rgba(54,144,210,0.08)", border: "1px solid rgba(54,144,210,0.12)", color: "#3690d2" }}>{f.icon}</div>
                 <div>
                   <div className="text-sm font-medium text-white">{f.title}</div>
-                  <div className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>{f.desc}</div>
+                  <div className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>{f.desc}</div>
                 </div>
               </div>
             </AnimatedContent>

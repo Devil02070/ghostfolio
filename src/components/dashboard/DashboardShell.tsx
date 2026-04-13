@@ -100,7 +100,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </div>
 
           {/* Disconnect */}
-          <button onClick={async () => { await logout(); router.push("/login"); }}
+          <button onClick={async () => { await logout(); router.push("/"); }}
             className="w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 mt-4"
             style={{ color: "rgba(255,255,255,0.6)" }}
             title="Disconnect">

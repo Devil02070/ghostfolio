@@ -45,7 +45,7 @@ export default function LiveSection() {
         <AnimatedContent distance={40}>
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] mb-5"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)" }}>
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.65)" }}>
               <span className="relative w-2 h-2 rounded-full bg-red-500 live-dot" />
               Live Simulation
             </div>
@@ -57,14 +57,14 @@ export default function LiveSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <AnimatedContent distance={40} direction="horizontal" className="lg:col-span-3">
-            <div className="rounded-2xl overflow-hidden" style={{ background: "rgba(20,29,44,0.3)", backdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="rounded-2xl overflow-hidden" style={{ background: "rgba(20,29,44,0.2)", backdropFilter: "blur(28px)", border: "1px solid rgba(255,255,255,0.12)" }}>
+              <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
                   <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
                   <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
                 </div>
-                <span className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.25)" }}>ghostfolio-engine</span>
+                <span className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>cloakfi-engine</span>
                 <div className="flex items-center gap-1.5">
                   <span className="relative w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot" />
                   <span className="text-[10px]" style={{ color: "#5bc4a0" }}>Active</span>
@@ -79,7 +79,7 @@ export default function LiveSection() {
                     <svg className="w-3 h-3 flex-shrink-0" style={{ color: "rgba(255,255,255,0.15)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                     <span style={{ color: "#3690d2" }}>{item.to}</span>
-                    <span className="ml-auto" style={{ color: "rgba(255,255,255,0.3)" }}>{item.amt}</span>
+                    <span className="ml-auto" style={{ color: "rgba(255,255,255,0.5)" }}>{item.amt}</span>
                     <span className="text-[10px]" style={{ color: "#5bc4a0" }}>&#10003;</span>
                   </motion.div>
                 ))}
@@ -89,8 +89,8 @@ export default function LiveSection() {
 
           <AnimatedContent distance={40} direction="horizontal" reverse className="lg:col-span-2">
             <div className="rounded-2xl p-8 flex flex-col items-center justify-center"
-              style={{ background: "rgba(20,29,44,0.3)", backdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div className="text-[10px] uppercase tracking-[0.2em] mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>Privacy Score</div>
+              style={{ background: "rgba(20,29,44,0.2)", backdropFilter: "blur(28px)", border: "1px solid rgba(255,255,255,0.12)" }}>
+              <div className="text-[10px] uppercase tracking-[0.2em] mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>Privacy Score</div>
               <div className="relative w-44 h-44 mb-6">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
@@ -110,7 +110,7 @@ export default function LiveSection() {
                   { l: "Gas spent", v: "$0.00", c: "rgba(255,255,255,0.6)" },
                 ].map((r, i) => (
                   <div key={i} className="flex justify-between text-xs">
-                    <span style={{ color: "rgba(255,255,255,0.3)" }}>{r.l}</span>
+                    <span style={{ color: "rgba(255,255,255,0.5)" }}>{r.l}</span>
                     <span style={{ color: r.c }}>{r.v}</span>
                   </div>
                 ))}

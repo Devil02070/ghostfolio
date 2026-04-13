@@ -33,7 +33,7 @@ export default function ThemeProvider({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("ghostfolio-theme") as Theme | null;
+    const stored = localStorage.getItem("cloakfi-theme") as Theme | null;
     if (stored) {
       setTheme(stored);
     } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
@@ -45,7 +45,7 @@ export default function ThemeProvider({
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("ghostfolio-theme", theme);
+    localStorage.setItem("cloakfi-theme", theme);
   }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {

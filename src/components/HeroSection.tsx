@@ -57,7 +57,7 @@ export default function HeroSection() {
             className="hero-sub mt-6 text-lg leading-relaxed max-w-lg mx-auto lg:mx-0"
             style={{ color: "var(--text-secondary)" }}
           >
-            GhostFolio masks your real strategy behind intelligent decoy swaps.
+            CloakFi masks your real strategy behind intelligent decoy swaps.
             Confuse watchers. Protect your alpha.
           </p>
 

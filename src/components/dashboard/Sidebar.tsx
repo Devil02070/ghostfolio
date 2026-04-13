@@ -33,10 +33,10 @@ export default function Sidebar() {
       {/* Logo */}
       <Link href="/" className="flex items-center gap-3 px-6 py-6">
         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20">
-          G
+          C
         </div>
         <div>
-          <span className="text-[15px] font-bold block" style={{ color: "var(--d-text)" }}>GhostFolio</span>
+          <span className="text-[15px] font-bold block" style={{ color: "var(--d-text)" }}>CloakFi</span>
           <span className="text-[10px]" style={{ color: "var(--d-text-3)" }}>Privacy Shield</span>
         </div>
       </Link>
@@ -86,7 +86,7 @@ export default function Sidebar() {
               </div>
             )}
 
-            <button onClick={async () => { await logout(); router.push("/login"); }}
+            <button onClick={async () => { await logout(); router.push("/"); }}
               className="g-btn w-full text-[11px] py-2 text-center">
               Disconnect
             </button>

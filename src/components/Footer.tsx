@@ -11,10 +11,10 @@ export default function Footer() {
             className="w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-[10px]"
             style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
           >
-            G
+            C
           </div>
           <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-            GhostFolio &mdash; Build X Hackathon
+            CloakFi &mdash; Build X Hackathon
           </span>
         </div>
 

@@ -4,9 +4,11 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import { useLoginModal } from "@/components/LoginModal";
 
 export default function Navbar() {
   const navRef = useRef<HTMLElement>(null);
+  const { open: openLogin } = useLoginModal();
 
   useEffect(() => {
     gsap.fromTo(
@@ -34,7 +36,7 @@ export default function Navbar() {
             G
           </div>
           <span className="text-base font-semibold gradient-text">
-            GhostFolio
+            CloakFi
           </span>
         </Link>
 
@@ -59,9 +61,9 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Link href="/login" className="btn-primary text-sm px-5 py-2.5">
-            Launch App
-          </Link>
+          <button onClick={openLogin} className="btn-primary text-sm px-5 py-2.5 cursor-pointer">
+            Connect Wallet
+          </button>
         </div>
       </div>
     </nav>

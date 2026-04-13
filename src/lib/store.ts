@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const STORE_DIR = path.join(process.cwd(), ".ghostfolio-data");
+const STORE_DIR = path.join(process.cwd(), ".cloakfi-data");
 const SETTINGS_FILE = path.join(STORE_DIR, "decoy-settings.json");
 const DECOY_HISTORY_FILE = path.join(STORE_DIR, "decoy-history.json");
 const PRIVACY_HISTORY_FILE = path.join(STORE_DIR, "privacy-history.json");

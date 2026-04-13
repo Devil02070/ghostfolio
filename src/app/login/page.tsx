@@ -65,7 +65,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 group">
             <Logo size={44} className="group-hover:scale-105 transition-transform" />
-            <span className="text-xl font-bold text-white">GhostFolio</span>
+            <span className="text-xl font-bold text-white">CloakFi</span>
           </Link>
         </div>
 
