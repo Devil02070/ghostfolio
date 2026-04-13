@@ -4,12 +4,15 @@ import { useSendTransaction, useAccount } from "wagmi";
 import { parseEther } from "viem";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-// Decoy target addresses — token contracts on X Layer to simulate interaction
+// Decoy targets — random wallet addresses to send tiny OKB as noise
+// On testnet, contract addresses don't exist, so we use EOAs
 const DECOY_TARGETS = [
-  { address: "0x779ded0c9e1022225f8e0630b35a9b54be713736", symbol: "USDT" },
-  { address: "0x5a77f1443d16ee5761d310e38b62f77f726bc71c", symbol: "WETH" },
-  { address: "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1", symbol: "WBTC" },
-  { address: "0x74b7f16337b8972027f6196a17a631ac6de26d22", symbol: "USDC" },
+  { address: "0x000000000000000000000000000000000000dEaD", symbol: "BURN" },
+  { address: "0x1111111111111111111111111111111111111111", symbol: "LINK" },
+  { address: "0x2222222222222222222222222222222222222222", symbol: "WBTC" },
+  { address: "0x3333333333333333333333333333333333333333", symbol: "USDT" },
+  { address: "0x4444444444444444444444444444444444444444", symbol: "WETH" },
+  { address: "0x5555555555555555555555555555555555555555", symbol: "USDC" },
 ];
 
 export function useDecoySwap() {
@@ -19,13 +22,13 @@ export function useDecoySwap() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!isConnected || !address) throw new Error("MetaMask not connected");
+      if (!isConnected || !address) throw new Error("Wallet not connected");
 
       // Pick random target and tiny amount
       const target = DECOY_TARGETS[Math.floor(Math.random() * DECOY_TARGETS.length)];
-      const amount = (Math.random() * 0.005 + 0.001).toFixed(6);
+      const amount = (Math.random() * 0.003 + 0.001).toFixed(6);
 
-      // Triggers MetaMask popup for signing
+      // Triggers wallet popup for signing — simple native OKB transfer
       const hash = await sendTransactionAsync({
         to: target.address as `0x${string}`,
         value: parseEther(amount),
@@ -51,6 +54,7 @@ export function useDecoySwap() {
       qc.invalidateQueries({ queryKey: ["decoy-history"] });
       qc.invalidateQueries({ queryKey: ["footprint"] });
       qc.invalidateQueries({ queryKey: ["wallet-balance"] });
+      qc.invalidateQueries({ queryKey: ["wagmi-balance"] });
     },
   });
 }

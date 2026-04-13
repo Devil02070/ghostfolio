@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect, useBalance } from "wagmi";
 import { useWalletBalance } from "@/lib/hooks";
 import { useState } from "react";
 import Logo from "../Logo";
@@ -25,6 +25,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [copied, setCopied] = useState(false);
 
   const { data: balData, isLoading: balLoading } = useWalletBalance();
+  const { data: wagmiBal } = useBalance({ address: wagmiAddr, query: { enabled: wagmiConnected } });
 
   // Use wagmi address if connected via MetaMask/OKX Wallet, otherwise agentic wallet address
   const evmAddr = wagmiConnected ? wagmiAddr : (balData?.evmAddress || null);
