@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
+import { useWalletBalance } from "@/lib/hooks";
 import ThemeToggle from "../ThemeToggle";
 
 const navItems = [
@@ -18,14 +18,10 @@ export default function Sidebar() {
   const router = useRouter();
   const { email, accountName, logout } = useAuth();
 
-  const { data: balanceData } = useQuery({
-    queryKey: ["wallet-balance"],
-    queryFn: async () => { const r = await fetch("/api/wallet/balance"); return r.json(); },
-    refetchInterval: 60000,
-  });
+  const { data: balanceData } = useWalletBalance();
 
-  const totalValue = balanceData?.ok ? balanceData.data?.totalValueUsd : null;
-  const evmAddress = balanceData?.ok ? balanceData.data?.evmAddress : null;
+  const totalValue = balanceData?.totalValueUsd || null;
+  const evmAddress = balanceData?.evmAddress || null;
   const shortAddr = evmAddress ? `${evmAddress.slice(0, 6)}...${evmAddress.slice(-4)}` : accountName || "Wallet";
 
   return (

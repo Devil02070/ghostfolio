@@ -1,9 +1,11 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/lib/auth-context";
 
 // ── Wallet Balance ──
 export function useWalletBalance() {
+  const { loggedIn } = useAuth();
   return useQuery({
     queryKey: ["wallet-balance"],
     queryFn: async () => {
@@ -12,7 +14,9 @@ export function useWalletBalance() {
       if (!json.ok) throw new Error(json.error || "Failed");
       return json.data;
     },
+    enabled: loggedIn,
     refetchInterval: 60000,
+    staleTime: 10_000,
   });
 }
 

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
+import { useWalletBalance } from "@/lib/hooks";
 import { useState } from "react";
 import Logo from "../Logo";
 
@@ -21,14 +21,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [hovered, setHovered] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const { data: balData, isLoading: balLoading } = useQuery({
-    queryKey: ["wallet-balance"],
-    queryFn: async () => { const r = await fetch("/api/wallet/balance"); return r.json(); },
-    refetchInterval: 60000,
-  });
+  const { data: balData, isLoading: balLoading } = useWalletBalance();
 
-  const evmAddr = balData?.ok ? balData.data?.evmAddress : null;
-  const addrLoading = balLoading || (!balData && !evmAddr);
+  const evmAddr = balData?.evmAddress || null;
+  const addrLoading = balLoading;
   const short = evmAddr ? `${evmAddr.slice(0, 6)}...${evmAddr.slice(-4)}` : null;
 
   return (

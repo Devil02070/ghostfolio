@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface WalletState {
   loggedIn: boolean;
@@ -36,6 +37,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
   const [state, setState] = useState<WalletState>({
     loggedIn: false,
     email: "",
@@ -93,11 +95,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const json = await res.json();
       if (json.ok) {
         await refresh();
+        queryClient.invalidateQueries();
         return { ok: true, isNew: json.data?.isNew };
       }
       return { ok: false, error: json.error || "Verification failed" };
     },
-    [refresh]
+    [refresh, queryClient]
   );
 
   const logout = useCallback(async () => {
@@ -110,7 +113,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       accountCount: 0,
       loading: false,
     });
-  }, []);
+    queryClient.clear();
+  }, [queryClient]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, verify, logout, refresh }}>
