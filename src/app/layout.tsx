@@ -3,6 +3,7 @@ import { Sora, Inter, JetBrains_Mono } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import { AuthProvider } from "@/lib/auth-context";
 import { QueryProvider } from "@/lib/query-provider";
+import { Web3Provider } from "@/lib/web3-provider";
 import "./globals.css";
 
 const sora = Sora({
@@ -44,7 +45,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" style={{ background: "var(--bg)", color: "var(--text)" }}>
         <ThemeProvider>
           <QueryProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <Web3Provider>
+              <AuthProvider>{children}</AuthProvider>
+            </Web3Provider>
           </QueryProvider>
         </ThemeProvider>
       </body>

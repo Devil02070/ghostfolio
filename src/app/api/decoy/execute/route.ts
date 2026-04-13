@@ -22,6 +22,38 @@ export async function POST(request: Request) {
   const mode = body.mode || "simulate";
 
   try {
+    // ── Record mode — log a MetaMask-executed transaction ──
+    if (mode === "record") {
+      const recordId = `d-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const amt = parseFloat(body.amount || "0");
+      const record = {
+        id: recordId,
+        timestamp: new Date().toISOString(),
+        fromToken: "OKB",
+        fromTokenAddress: body.fromAddress || "",
+        toToken: body.toSymbol || "Unknown",
+        toTokenAddress: body.toAddress || "",
+        amount: body.amount || "0",
+        amountUsd: Math.round(amt * 82 * 100) / 100,
+        gasCost: 0,
+        status: "completed" as const,
+        txHash: body.txHash,
+        chain: "X Layer Testnet",
+        route: `OKB → ${body.toSymbol || "?"} (MetaMask)`,
+      };
+      addDecoyRecord(record);
+
+      return NextResponse.json({
+        ok: true,
+        data: {
+          swap: record,
+          txHash: body.txHash,
+          explorer: body.txHash ? `https://www.okx.com/explorer/xlayer-test/tx/${body.txHash}` : null,
+          message: `Decoy recorded: OKB → ${body.toSymbol} via MetaMask`,
+        },
+      });
+    }
+
     // Check auth
     const status = await walletStatus();
     if (!status.ok || !(status.data as Record<string, unknown>).loggedIn) {

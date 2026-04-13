@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { useAccount } from "wagmi";
 import { useDecoySettings, useUpdateDecoySettings, useDecoyHistory, useDecoyAction } from "@/lib/hooks";
+import { useDecoySwap } from "@/lib/use-decoy-swap";
+import ConnectWallet from "@/components/dashboard/ConnectWallet";
 
 export default function DecoyControlPage() {
   const ref = useRef<HTMLDivElement>(null);
@@ -12,13 +15,34 @@ export default function DecoyControlPage() {
   const act = useDecoyAction();
   const [toast, setToast] = useState<{ ok: boolean; msg: string } | null>(null);
 
+  // MetaMask / wagmi
+  const { isConnected: metamaskConnected } = useAccount();
+  const decoySwap = useDecoySwap();
+
   useEffect(() => { if (sL) return; const ctx = gsap.context(() => { gsap.fromTo(".da", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power3.out" }); }, ref); return () => ctx.revert(); }, [sL]);
 
   const swaps = h?.swaps || [], gas = h?.totalGasSpent || 0, done = h?.completedSwaps || 0;
   const on = s?.enabled ?? false, bud = s?.dailyBudget ?? 5, mx = s?.maxSwapSize ?? 20, fr = s?.frequency ?? "moderate";
 
+  const busy = act.isPending || decoySwap.isPending;
+
   async function sim() { setToast(null); const r = await act.mutateAsync({ mode: "simulate" }); setToast({ ok: r.ok, msg: r.ok ? `Simulated: ${r.data.swap.fromToken} → ${r.data.swap.toToken}` : r.error || "Failed" }); }
-  async function exe() { setToast(null); const r = await act.mutateAsync({ mode: "execute" }); setToast({ ok: r.ok, msg: r.ok ? `Live TX: ${r.data.txHash?.slice(0, 18) || "pending"}... on X Layer` : r.error || "Failed" }); }
+
+  async function exe() {
+    setToast(null);
+    if (metamaskConnected) {
+      try {
+        const result = await decoySwap.mutateAsync();
+        setToast({ ok: true, msg: `TX via MetaMask: ${result.hash.slice(0, 18)}... (OKB → ${result.toSymbol})` });
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        setToast({ ok: false, msg: msg.includes("User rejected") ? "Transaction rejected" : msg });
+      }
+    } else {
+      const r = await act.mutateAsync({ mode: "execute" });
+      setToast({ ok: r.ok, msg: r.ok ? `TX: ${r.data.txHash?.slice(0, 18) || "pending"}... on X Layer` : r.error || "Failed" });
+    }
+  }
 
   if (sL) return <div className="flex items-center justify-center py-16"><div className="w-5 h-5 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(54,144,210,0.08)", borderTopColor: "rgba(255,255,255,0.4)" }} /></div>;
 
@@ -102,14 +126,29 @@ export default function DecoyControlPage() {
               </button>
             ))}
           </div>
+
+          {/* MetaMask connection for testnet swaps */}
+          <div className="mb-3 p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="text-[9px] uppercase tracking-wider font-semibold mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>
+              Swap Wallet (X Layer Testnet)
+            </div>
+            <ConnectWallet />
+          </div>
+
           <div className="space-y-2">
-            <button onClick={sim} disabled={act.isPending} className="g-btn w-full py-2.5 text-[10px] flex items-center justify-center gap-2 disabled:opacity-50">
+            <button onClick={sim} disabled={busy} className="g-btn w-full py-2.5 text-[10px] flex items-center justify-center gap-2 disabled:opacity-50">
               {act.isPending && <div className="w-3 h-3 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(54,144,210,0.08)", borderTopColor: "rgba(255,255,255,0.4)" }} />} Simulate
             </button>
-            <button onClick={exe} disabled={act.isPending}
-              className="w-full py-2.5 text-[10px] font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
-              style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(54,144,210,0.15)", color: "#ffffff", backdropFilter: "blur(8px)" }}>
-              {act.isPending && <div className="w-3 h-3 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(54,144,210,0.12)", borderTopColor: "#3690d2" }} />} Execute Swap
+            <button onClick={exe} disabled={busy}
+              className="w-full py-2.5 text-[10px] font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer"
+              style={{
+                background: metamaskConnected ? "rgba(246,133,27,0.12)" : "rgba(255,255,255,0.12)",
+                border: `1px solid ${metamaskConnected ? "rgba(246,133,27,0.25)" : "rgba(54,144,210,0.15)"}`,
+                color: "#ffffff",
+                backdropFilter: "blur(8px)",
+              }}>
+              {busy && <div className="w-3 h-3 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(54,144,210,0.12)", borderTopColor: "#3690d2" }} />}
+              {metamaskConnected ? "Execute via MetaMask" : "Execute Swap"}
             </button>
           </div>
         </div></div>
@@ -124,18 +163,22 @@ export default function DecoyControlPage() {
         : swaps.length === 0 ? <p className="text-[10px] text-center py-4" style={{ color: "rgba(255,255,255,0.65)" }}>No swaps yet</p>
         : <div className="overflow-x-auto"><table className="w-full">
           <thead><tr>{["Time", "From", "To", "Amt", "Status", "TX"].map((x) => <th key={x} className="text-left text-[9px] font-semibold py-2 px-3" style={{ color: "rgba(255,255,255,0.65)", borderBottom: "1px solid rgba(20,29,44,0.04)" }}>{x}</th>)}</tr></thead>
-          <tbody>{swaps.map((x: { id: string; timestamp: string; fromToken: string; toToken: string; amount: string; status: string; txHash?: string }) => (
-            <tr key={x.id} className="g-row" style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-              <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>{new Date(x.timestamp).toLocaleTimeString()}</td>
-              <td className="py-2 px-3 text-[10px] font-semibold" style={{ color: "#ffffff" }}>{x.fromToken}</td>
-              <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>&rarr; {x.toToken}</td>
-              <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>{x.amount}</td>
-              <td className="py-2 px-3 text-[9px] font-semibold capitalize" style={{ color: "rgba(255,255,255,0.65)" }}>{x.status}</td>
-              <td className="py-2 px-3 text-[9px] font-mono" style={{ color: x.txHash ? "#3690d2" : "rgba(255,255,255,0.5)" }}>
-                {x.txHash ? <a href={`https://www.okx.com/explorer/xlayer/tx/${x.txHash}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{x.txHash.slice(0, 10)}...</a> : "—"}
-              </td>
-            </tr>
-          ))}</tbody></table></div>}
+          <tbody>{swaps.map((x: { id: string; timestamp: string; fromToken: string; toToken: string; amount: string; status: string; txHash?: string; chain?: string }) => {
+            const isTestnet = x.chain === "X Layer Testnet";
+            const explorerBase = isTestnet ? "https://www.okx.com/explorer/xlayer-test" : "https://www.okx.com/explorer/xlayer";
+            return (
+              <tr key={x.id} className="g-row" style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>{new Date(x.timestamp).toLocaleTimeString()}</td>
+                <td className="py-2 px-3 text-[10px] font-semibold" style={{ color: "#ffffff" }}>{x.fromToken}</td>
+                <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>&rarr; {x.toToken}</td>
+                <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>{x.amount}</td>
+                <td className="py-2 px-3 text-[9px] font-semibold capitalize" style={{ color: "rgba(255,255,255,0.65)" }}>{x.status}</td>
+                <td className="py-2 px-3 text-[9px] font-mono" style={{ color: x.txHash ? "#3690d2" : "rgba(255,255,255,0.5)" }}>
+                  {x.txHash ? <a href={`${explorerBase}/tx/${x.txHash}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{x.txHash.slice(0, 10)}...</a> : "—"}
+                </td>
+              </tr>
+            );
+          })}</tbody></table></div>}
       </div></div>
     </div>
   );
