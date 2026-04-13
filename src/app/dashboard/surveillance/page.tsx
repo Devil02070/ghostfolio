@@ -9,6 +9,7 @@ export default function SurveillancePage() {
   const ref = useRef<HTMLDivElement>(null);
   const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
+  const [copiedAddr, setCopiedAddr] = useState<string | null>(null);
   const { data, isLoading } = useSurveillance();
 
   async function scan() { setBusy(true); await fetch("/api/surveillance?refresh=true"); qc.invalidateQueries({ queryKey: ["surveillance"] }); setBusy(false); }
@@ -64,20 +65,52 @@ export default function SurveillancePage() {
             <h3 className="text-xs font-semibold mb-4" style={{ color: "#ffffff" }}>Watchers ({w.length})</h3>
             {w.length === 0 ? <p className="text-[10px] text-center py-6" style={{ color: "rgba(255,255,255,0.65)" }}>None detected</p> : (
               <div className="space-y-2">{w.map((x: { address: string; label: string; type: string; similarity: number }, i: number) => (
-                <div key={i} className="flex items-center gap-3 p-2.5 rounded-2xl g-item">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[8px] font-bold uppercase"
-                    style={{ background: "rgba(54,144,210,0.12)", border: "1px solid rgba(54,144,210,0.08)", color: "rgba(255,255,255,0.65)" }}>
-                    {x.type.slice(0, 2)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[11px] font-semibold truncate" style={{ color: "#ffffff" }}>{x.label}</div>
-                    <div className="text-[9px]" style={{ color: "rgba(255,255,255,0.65)" }}>{x.address.slice(0, 12)}...</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[11px] font-bold" style={{ color: "#ffffff" }}>{x.similarity}%</div>
-                    <div className="w-14 h-1 rounded-full mt-1 g-well overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${x.similarity}%`, background: `rgba(255,255,255,${x.similarity > 70 ? 0.6 : 0.3})` }} />
+                <div key={i} className="p-3 rounded-2xl g-item">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[8px] font-bold uppercase flex-shrink-0"
+                      style={{ background: "rgba(54,144,210,0.12)", border: "1px solid rgba(54,144,210,0.08)", color: "rgba(255,255,255,0.65)" }}>
+                      {x.type.slice(0, 2)}
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11px] font-semibold truncate" style={{ color: "#ffffff" }}>{x.label}</div>
+                      <div className="text-[9px] capitalize" style={{ color: "rgba(255,255,255,0.5)" }}>{x.type}</div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-[11px] font-bold" style={{ color: "#ffffff" }}>{x.similarity}%</div>
+                      <div className="w-14 h-1 rounded-full mt-1 g-well overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${x.similarity}%`, background: x.similarity > 70 ? "#e8766a" : x.similarity > 50 ? "#f6851b" : "rgba(255,255,255,0.3)" }} />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Address row with copy */}
+                  <div className="flex items-center gap-2 mt-2 ml-12">
+                    <span className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      {x.address.slice(0, 6)}...{x.address.slice(-4)}
+                    </span>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(x.address); setCopiedAddr(x.address); setTimeout(() => setCopiedAddr(null), 2000); }}
+                      className="cursor-pointer transition-all duration-200 hover:scale-125"
+                      style={{ color: copiedAddr === x.address ? "#5bc4a0" : "rgba(255,255,255,0.35)" }}
+                      title={copiedAddr === x.address ? "Copied!" : "Copy address"}>
+                      {copiedAddr === x.address ? (
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      )}
+                    </button>
+                    <a href={`https://web3.okx.com/explorer/x-layer-testnet/address/${x.address}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="hover:scale-125 transition-transform"
+                      style={{ color: "rgba(255,255,255,0.35)" }}
+                      title="View on explorer">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
                   </div>
                 </div>
               ))}</div>
