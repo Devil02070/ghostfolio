@@ -15,7 +15,7 @@ const XLAYER_TOKENS = [
 
 const NATIVE_OKB = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 const XLAYER_CHAIN = "xlayer"; // chainIndex 196 — mainnet, zero gas
-const XLAYER_EXPLORER = "https://www.okx.com/explorer/xlayer";
+const XLAYER_EXPLORER = "https://web3.okx.com/explorer/x-layer";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         data: {
           swap: record,
           txHash: body.txHash,
-          explorer: body.txHash ? `https://www.okx.com/explorer/xlayer-test/tx/${body.txHash}` : null,
+          explorer: body.txHash ? `https://web3.okx.com/explorer/x-layer-testnet/tx/${body.txHash}` : null,
           message: `Decoy recorded: OKB → ${body.toSymbol} via MetaMask`,
         },
       });

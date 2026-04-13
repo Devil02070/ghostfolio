@@ -165,7 +165,7 @@ export default function DecoyControlPage() {
           <thead><tr>{["Time", "From", "To", "Amt", "Status", "TX"].map((x) => <th key={x} className="text-left text-[9px] font-semibold py-2 px-3" style={{ color: "rgba(255,255,255,0.65)", borderBottom: "1px solid rgba(20,29,44,0.04)" }}>{x}</th>)}</tr></thead>
           <tbody>{swaps.map((x: { id: string; timestamp: string; fromToken: string; toToken: string; amount: string; status: string; txHash?: string; chain?: string }) => {
             const isTestnet = x.chain === "X Layer Testnet";
-            const explorerBase = isTestnet ? "https://www.okx.com/explorer/xlayer-test" : "https://www.okx.com/explorer/xlayer";
+            const explorerBase = isTestnet ? "https://web3.okx.com/explorer/x-layer-testnet" : "https://web3.okx.com/explorer/x-layer";
             return (
               <tr key={x.id} className="g-row" style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
                 <td className="py-2 px-3 text-[10px]" style={{ color: "rgba(255,255,255,0.65)" }}>{new Date(x.timestamp).toLocaleTimeString()}</td>

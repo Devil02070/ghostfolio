@@ -10,7 +10,7 @@ export const xlayerTestnet = defineChain({
     default: { http: ["https://testrpc.xlayer.tech/evm"] },
   },
   blockExplorers: {
-    default: { name: "OKX Explorer", url: "https://www.okx.com/explorer/xlayer-test" },
+    default: { name: "OKX Explorer", url: "https://web3.okx.com/explorer/x-layer-testnet" },
   },
   testnet: true,
 });
