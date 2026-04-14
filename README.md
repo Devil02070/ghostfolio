@@ -225,7 +225,7 @@ Single-builder submission. No co-contributors, no additional agents beyond the u
 | Public GitHub repo + README | ✅ this file (intro, architecture, deployment, skills, mechanics, team, positioning) |
 | Google Form submission | ⏳ due April 15, 23:59 UTC |
 | Demo video (1–3 min, bonus) | 🎥 [Loom / YouTube link — TBA] |
-| X/Twitter post `#XLayerHackathon` `@XLayerOfficial` (bonus) | 🐦 [tweet link — TBA] |
+| X/Twitter post `#XLayerHackathon` `@XLayerOfficial` (bonus) | ✅ [post](https://x.com/devil_move/status/2043923019022966890) |
 
 **Deadline:** April 15, 2026 · 23:59 UTC
 
