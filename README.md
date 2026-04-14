@@ -176,15 +176,24 @@ ghostfolio/
 
 **Network:** X Layer testnet (chainId 195) · **Explorer:** [web3.okx.com/explorer/x-layer-testnet](https://web3.okx.com/explorer/x-layer-testnet)
 
-| Component | Address / Hash |
-|---|---|
-| Agentic Wallet (OKX, TEE-signed) | `0x9D8Ef16Cc3787dE213e68c7Cc30406E515981f78` |
-| Sample decoy tx — OKB → LINK | [`0x46aad3226d9b9664f4b719aaddf9b428a918098ad50835e2422d5e6d7898f3c5`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x46aad3226d9b9664f4b719aaddf9b428a918098ad50835e2422d5e6d7898f3c5) |
-| Sample decoy tx — OKB → AAVE | [`0x35b981c122cee8932466b3768f9998c302910889d4ef953dfae3856855d5467d`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x35b981c122cee8932466b3768f9998c302910889d4ef953dfae3856855d5467d) |
-| Sample decoy tx — OKB → UNI | [`0xd3501477853ae4c5fd2be3b96ee1db9b7e74b333c68ebc1eb1d357c72ae6033b`](https://web3.okx.com/explorer/x-layer-testnet/tx/0xd3501477853ae4c5fd2be3b96ee1db9b7e74b333c68ebc1eb1d357c72ae6033b) |
-| Sample decoy tx — OKB → USDC | [`0x7e3a140975b5126320b3bca32ffb7efda5d875d0d3c1fab29a3be592208d9166`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x7e3a140975b5126320b3bca32ffb7efda5d875d0d3c1fab29a3be592208d9166) |
+### Identities
 
-The Agentic Wallet is the project's sole onchain identity. It holds no privileged role — every decoy tx is signed by OKX's TEE after user-initiated OTP auth. No other agents are deployed.
+| Role | Address | Notes |
+|---|---|---|
+| **Agentic Wallet (EVM / X Layer)** | `0x18d1553f05a2307d7d9178d8482180bb0a2fcd5e` | OKX Agentic Wallet, TEE-signed via email + OTP. Sole onchain identity for the project. Account ID `0fdb3202-f5e3-4d7b-9dce-c60ed60476a8`. |
+| Agentic Wallet (Solana) | `9h4B9rfmUN7bELHXV9HDgReVVhfT8GR72oebCAuTr9th` | Same account, SVM chain |
+| User Browser Wallet (wagmi) | `0x9D8Ef16Cc3787dE213e68c7Cc30406E515981f78` | MetaMask / OKX Wallet extension. Signs the decoy txs directly for testnet demo (the onchainos CLI's `swap execute` path is mainnet-only). |
+
+The Agentic Wallet reads portfolio, history, and smart-money signals; the browser wallet signs testnet decoys. No other agents deployed.
+
+### Sample Decoy Transactions (X Layer testnet)
+
+| Swap | Tx Hash |
+|---|---|
+| OKB → LINK | [`0x46aa…f3c5`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x46aad3226d9b9664f4b719aaddf9b428a918098ad50835e2422d5e6d7898f3c5) |
+| OKB → AAVE | [`0x35b9…5467d`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x35b981c122cee8932466b3768f9998c302910889d4ef953dfae3856855d5467d) |
+| OKB → UNI | [`0xd350…033b`](https://web3.okx.com/explorer/x-layer-testnet/tx/0xd3501477853ae4c5fd2be3b96ee1db9b7e74b333c68ebc1eb1d357c72ae6033b) |
+| OKB → USDC | [`0x7e3a…9166`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x7e3a140975b5126320b3bca32ffb7efda5d875d0d3c1fab29a3be592208d9166) |
 
 ---
 
@@ -220,7 +229,7 @@ Single-builder submission. No co-contributors, no additional agents beyond the u
 | Requirement | Status |
 |---|---|
 | Built on X Layer | ✅ 4 decoy txs on X Layer testnet (see Deployment) |
-| Agentic Wallet as onchain identity | ✅ `0x9D8E…1f78` (OKX, TEE) |
+| Agentic Wallet as onchain identity | ✅ `0x18d1…cd5e` (OKX, TEE) |
 | Use ≥1 OnchainOS / Uniswap skill | ✅ 24 skills installed, 6 actively called |
 | Public GitHub repo + README | ✅ this file (intro, architecture, deployment, skills, mechanics, team, positioning) |
 | Google Form submission | ⏳ due April 15, 23:59 UTC |
