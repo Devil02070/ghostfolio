@@ -22,44 +22,37 @@ interface BalToken {
 
 export async function GET() {
   try {
-    const balRes = await walletBalance();
-    if (!balRes.ok) {
-      return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
-    }
-
-    const data = balRes.data as { details?: Array<{ tokenAssets?: BalToken[] }>; totalValueUsd?: string };
-    const details = data.details || [];
-
-    // Build real allocation
+    // ── Real holdings (best-effort; decoys alone are enough to build observer view) ──
     const realTokens: Array<{ symbol: string; value: number; allocation: number }> = [];
     let totalUsd = 0;
 
-    for (const group of details) {
-      if (!group.tokenAssets) continue;
-      for (const t of group.tokenAssets) {
-        const val = parseFloat(t.usdValue || "0");
-        if (val < 0.01) continue;
-        totalUsd += val;
-        realTokens.push({ symbol: t.symbol, value: val, allocation: 0 });
+    const balRes = await walletBalance().catch(() => ({ ok: false, data: null }));
+    if (balRes.ok) {
+      const data = balRes.data as { details?: Array<{ tokenAssets?: BalToken[] }>; totalValueUsd?: string };
+      const details = data.details || [];
+      for (const group of details) {
+        if (!group.tokenAssets) continue;
+        for (const t of group.tokenAssets) {
+          const val = parseFloat(t.usdValue || "0");
+          if (val < 0.01) continue;
+          totalUsd += val;
+          realTokens.push({ symbol: t.symbol, value: val, allocation: 0 });
+        }
       }
+      realTokens.sort((a, b) => b.value - a.value);
+      for (const t of realTokens) t.allocation = totalUsd > 0 ? Math.round((t.value / totalUsd) * 100) : 0;
     }
-    realTokens.sort((a, b) => b.value - a.value);
-    for (const t of realTokens) t.allocation = totalUsd > 0 ? Math.round((t.value / totalUsd) * 100) : 0;
 
-    // Build "observer" view by mixing in decoy history
+    // ── Observer view: mix (reduced) real tokens with decoy influence ──
     const decoys = getDecoyHistory().filter((d) => d.status === "completed");
     const observerMap = new Map<string, number>();
 
-    // Start with real tokens but reduce their weight
     for (const t of realTokens) {
       observerMap.set(t.symbol, t.value * 0.8);
     }
-
-    // Add decoy token influence
     for (const d of decoys) {
       const existing = observerMap.get(d.toToken) || 0;
-      observerMap.set(d.toToken, existing + d.amountUsd * 3); // Amplify decoy influence
-      // Reduce from-token apparent holding
+      observerMap.set(d.toToken, existing + d.amountUsd * 3);
       const fromVal = observerMap.get(d.fromToken) || 0;
       observerMap.set(d.fromToken, Math.max(0, fromVal - d.amountUsd * 2));
     }
@@ -74,14 +67,14 @@ export async function GET() {
       .sort((a, b) => b.value - a.value)
       .filter((t) => t.allocation > 0);
 
-    // Calculate privacy score
+    // ── Privacy score ──
     const allSymbols = [...new Set([...realTokens.map((t) => t.symbol), ...observerTokens.map((t) => t.symbol)])];
     const realVec = allSymbols.map((s) => realTokens.find((t) => t.symbol === s)?.allocation || 0);
     const obsVec = allSymbols.map((s) => observerTokens.find((t) => t.symbol === s)?.allocation || 0);
     const similarity = cosineSimilarity(realVec, obsVec);
-    const privacyScore = Math.round((1 - similarity) * 100);
+    const privacyScore = realTokens.length === 0 ? (observerTokens.length > 0 ? 100 : 0) : Math.round((1 - similarity) * 100);
 
-    // Save snapshot
+    // ── Snapshot ──
     const totalDecoyCost = decoys.reduce((s, d) => s + d.gasCost, 0);
     const today = new Date().toISOString().split("T")[0];
     addPrivacySnapshot({
@@ -107,6 +100,7 @@ export async function GET() {
         privacyScore,
         similarity: Math.round(similarity * 100),
         decoysDeployed: decoys.length,
+        walletAuthenticated: balRes.ok,
         lastAnalyzed: new Date().toISOString(),
       },
     });
