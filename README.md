@@ -84,7 +84,7 @@ Observed (Day 7): 35% ETH · 22% LINK · 18% WBTC · 12% USDC …
 - **Styling** — Tailwind CSS v4, CSS variables for dual theme, glassmorphism
 - **Animation** — GSAP + ScrollTrigger, Lenis smooth scroll, Framer Motion, OGL (WebGL)
 - **State / Data** — TanStack Query (30s stale, 60s refetch)
-- **Blockchain** — viem, wagmi, Uniswap v4 SDK, X Layer (chainId 196)
+- **Blockchain** — viem, wagmi, Uniswap v4 SDK, X Layer testnet (chainId 195)
 - **OKX** — Agentic Wallet (TEE-signed, email+OTP), OnchainOS CLI v2.2.8
 - **API** — Next.js route handlers (Hono wrapper planned)
 
@@ -172,17 +172,60 @@ ghostfolio/
 
 ---
 
+## Deployment
+
+**Network:** X Layer testnet (chainId 195) · **Explorer:** [web3.okx.com/explorer/x-layer-testnet](https://web3.okx.com/explorer/x-layer-testnet)
+
+| Component | Address / Hash |
+|---|---|
+| Agentic Wallet (OKX, TEE-signed) | `0x9D8Ef16Cc3787dE213e68c7Cc30406E515981f78` |
+| Sample decoy tx — OKB → LINK | [`0x46aad3226d9b9664f4b719aaddf9b428a918098ad50835e2422d5e6d7898f3c5`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x46aad3226d9b9664f4b719aaddf9b428a918098ad50835e2422d5e6d7898f3c5) |
+| Sample decoy tx — OKB → AAVE | [`0x35b981c122cee8932466b3768f9998c302910889d4ef953dfae3856855d5467d`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x35b981c122cee8932466b3768f9998c302910889d4ef953dfae3856855d5467d) |
+| Sample decoy tx — OKB → UNI | [`0xd3501477853ae4c5fd2be3b96ee1db9b7e74b333c68ebc1eb1d357c72ae6033b`](https://web3.okx.com/explorer/x-layer-testnet/tx/0xd3501477853ae4c5fd2be3b96ee1db9b7e74b333c68ebc1eb1d357c72ae6033b) |
+| Sample decoy tx — OKB → USDC | [`0x7e3a140975b5126320b3bca32ffb7efda5d875d0d3c1fab29a3be592208d9166`](https://web3.okx.com/explorer/x-layer-testnet/tx/0x7e3a140975b5126320b3bca32ffb7efda5d875d0d3c1fab29a3be592208d9166) |
+
+The Agentic Wallet is the project's sole onchain identity. It holds no privileged role — every decoy tx is signed by OKX's TEE after user-initiated OTP auth. No other agents are deployed.
+
+---
+
+## Positioning in the X Layer Ecosystem
+
+X Layer's core pitch is cheap, fast DeFi with OKX-grade liquidity. But DeFi on any public L2 is **transparent by default** — which means every profitable trader on X Layer is a target for copy-trading bots, MEV searchers, and whale trackers the moment their strategy starts working.
+
+CloakFi sits one layer above the existing X Layer stack:
+
+- **DEX (OKX DEX, Uniswap)** — where real trades happen
+- **Wallet (OKX Agentic Wallet)** — who's trading
+- **Surveillance (OKX Smart Money / Signals)** — who's watching
+- **CloakFi ← privacy layer** — what observers *think* you're doing
+
+We don't replace any piece of the stack — we plug into it. The Surveillance Engine consumes OKX's own smart-money feed; the Decoy Engine routes through OKX DEX aggregator and Uniswap; the wallet identity is an OKX Agentic Wallet. CloakFi's value grows with X Layer's adoption: more active traders → more surveillance → more demand for plausible-deniability tools.
+
+Target users on day one: yield farmers, memecoin rotators, and LPs with 5-figure+ positions who don't want their moves copied within the hour.
+
+---
+
+## Team
+
+| Name | Role | GitHub |
+|---|---|---|
+| Ajay | Full-stack dev, product, hackathon lead | [@Devil02070](https://github.com/Devil02070) |
+
+Single-builder submission. No co-contributors, no additional agents beyond the user-owned OKX Agentic Wallet.
+
+---
+
 ## Hackathon Compliance
 
 | Requirement | Status |
 |---|---|
-| Deploy on X Layer testnet (≥1 real TX) | ✅ [tx hash] |
-| Use ≥1 OnchainOS & Uniswap skill | ✅ 24 skills integrated |
-| Register Agentic Wallet via OKX portal | ✅ |
-| Public GitHub repo + README | ✅ this file |
-| Google Form submission | ✅ |
-| Demo video (2–3 min) | 🎥 [Loom link] |
-| Twitter post (`@XLayerOfficial` `#BuildX`) | 🐦 [tweet link] |
+| Built on X Layer | ✅ 4 decoy txs on X Layer testnet (see Deployment) |
+| Agentic Wallet as onchain identity | ✅ `0x9D8E…1f78` (OKX, TEE) |
+| Use ≥1 OnchainOS / Uniswap skill | ✅ 24 skills installed, 6 actively called |
+| Public GitHub repo + README | ✅ this file (intro, architecture, deployment, skills, mechanics, team, positioning) |
+| Google Form submission | ⏳ due April 15, 23:59 UTC |
+| Demo video (1–3 min, bonus) | 🎥 [Loom / YouTube link — TBA] |
+| X/Twitter post `#XLayerHackathon` `@XLayerOfficial` (bonus) | 🐦 [tweet link — TBA] |
 
 **Deadline:** April 15, 2026 · 23:59 UTC
 
@@ -216,5 +259,5 @@ MIT
 
 ## Credits
 
-Built by [@ajay](https://github.com/Devil02070) for the OKX Build X Hackathon, Season 2.
+Built by [@ajay](https://github.com/Devil02070) for the OKX Build X Hackathon, Season 2 (`#XLayerHackathon`).
 Powered by OKX OnchainOS, Uniswap v4, and X Layer.
