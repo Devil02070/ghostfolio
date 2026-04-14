@@ -19,6 +19,7 @@
 
 # ghostfolio data
 /.ghostfolio-data/
+/.cloakfi-data/
 
 # production
 /build
